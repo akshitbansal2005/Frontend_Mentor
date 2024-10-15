@@ -9,38 +9,32 @@
 <body>
     <form id="signinForm" class="signinform-container">
         <div class="container">
-           
-           
-            
-           <div class="signinform">
-            <h1>Sign In</h1>
-           <div class="form-fields">
-            <label for="email"><b>Email</b></label>
-            <input type="email" placeholder="Enter Email" autocomplete="email" id="email" required>
+            <div class="signinform">
+                <h1>Sign In</h1>
+                <div class="form-fields">
+                    <label for="email"><b>Email</b></label>
+                    <input type="email" placeholder="Enter Email" autocomplete="email" id="email" required>
 
-            <label for="psw"><b>Password</b></label>
-            <input type="password" placeholder="Enter Password" autocomplete="new-password" id="psw" required>
-        </div>
-            <div class="buttons">
-                <button type="button" class="cancelbtn">Cancel</button>
-                <button type="submit" class="signinbtn">Sign In</button>
+                    <label for="psw"><b>Password</b></label>
+                    <input type="password" placeholder="Enter Password" autocomplete="current-password" id="psw" required>
+                </div>
+                <div class="buttons">
+                    <button type="button" class="cancelbtn" onclick="clearForm()">Cancel</button>
+                    <button type="submit" class="signinbtn">Sign In</button>
+                </div>
             </div>
-           </div>
-           <div class="signinimage-container">
-            <img src="/login.webp" alt="image" class="sign-in-img" />
-        </div>
-           
+            <div class="signinimage-container">
+                <img src="/login.webp" alt="image" class="sign-in-img" />
+            </div>
         </div>
     </form>
 
     <script type="module">
-        
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-app.js";
         import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-analytics.js";
-        import { getFirestore, addDoc, collection,getDoc } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-firestore.js"; // Correct import for Firestore
-        import { getAuth, createUserWithEmailAndPassword ,signInWithEmailAndPassword} from "https://www.gstatic.com/firebasejs/10.14.0/firebase-auth.js";
+        import { getFirestore } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-firestore.js"; 
+        import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-auth.js";
 
-      
         const firebaseConfig = {
             apiKey: "AIzaSyC7ihLRIl47Iu6nk6qh_Ak8i3pSYw3tO4A",
             authDomain: "frontend-mentor-cceee.firebaseapp.com",
@@ -52,42 +46,32 @@
             databaseURL: "https://frontend-mentor-cceee-default-rtdb.firebaseio.com"
         };
 
-      
         const app = initializeApp(firebaseConfig);
         const analytics = getAnalytics(app);
-
-       
-        const db = getFirestore(app); 
-
-       
         const auth = getAuth();
 
-      
         const form = document.getElementById('signinForm');
         form.addEventListener('submit', async (e) => {
             e.preventDefault();  
             const email = document.getElementById('email').value;
             const password = document.getElementById('psw').value;
 
-           
-            signInWithEmailAndPassword(auth, email, password)
-  .then((userCredential) => {
-    
-    const user = userCredential.user;
-const uid=user.uid;
-console.log(user);
-const displayName = user.displayName ? user.displayName : "User";
-            alert("Welcome, " + displayName);
-    
-    // ...
-  })
-  .catch((error) => {
-    const errorCode = error.code;
-    const errorMessage = error.message;
-    console.log(errorCode, errorMessage);
-  });
-})
+            try {
+                const userCredential = await signInWithEmailAndPassword(auth, email, password);
+                const user = userCredential.user;
+                const displayName = user.displayName ? user.displayName : "User";
+                alert("Welcome, " + displayName);
+                // Optionally redirect or take other actions here
+            } catch (error) {
+                alert("Error: " + error.message); // User feedback on error
+            }
+        });
 
+        // Function to clear the form
+        function clearForm() {
+            document.getElementById('email').value = '';
+            document.getElementById('psw').value = '';
+        }
     </script>
 </body>
 </html>
