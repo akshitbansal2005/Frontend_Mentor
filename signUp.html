@@ -1,6 +1,111 @@
 <!DOCTYPE html>
 <html lang="en">
+<head<!DOCTYPE html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="signUp.css" />
+    <title>Sign Up</title>
+</head>
+<body>
+    <form id="signupForm" class="form-container" >
+        <div class="container">
+            <div class="image-container">
+                <img src="/signup.webp" alt="Sign up illustration" />
+            </div>
+            <div class="form">
+                <h1>Sign Up</h1>
+                <hr>
+                <div class="form-fields">
+                    <label for="name"><b>Name</b></label>
+                    <input type="text" placeholder="Enter Name" autocomplete="name" id="name" required>
+
+                    <label for="email"><b>Email</b></label>
+                    <input type="email" placeholder="Enter Email" autocomplete="email" id="email" required>
+
+                    <label for="psw"><b>Password</b></label>
+                    <input type="password" placeholder="Enter Password" autocomplete="new-password" id="psw" required>
+
+                    <label for="psw-repeat"><b>Repeat Password</b></label>
+                    <input type="password" placeholder="Repeat Password" id="psw-repeat" autocomplete="new-password" required>
+                </div>
+
+                <div class="buttons">
+                    <button type="button" class="cancelbtn">Cancel</button>
+                    <button type="submit" class="signupbtn">Sign Up</button>
+                </div>
+                <div id="message" style="color: red; margin-top: 10px;"></div>
+            </div>
+        </div>
+    </form>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-app.js";
+        import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-analytics.js";
+        import { getFirestore, addDoc, collection } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-firestore.js";
+        import { getAuth, createUserWithEmailAndPassword, updateProfile } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-auth.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyC7ihLRIl47Iu6nk6qh_Ak8i3pSYw3tO4A",
+            authDomain: "frontend-mentor-cceee.firebaseapp.com",
+            projectId: "frontend-mentor-cceee",
+            storageBucket: "frontend-mentor-cceee.appspot.com",
+            messagingSenderId: "51303965383",
+            appId: "1:51303965383:web:2f8c20fb952bd844dd94e2",
+            measurementId: "G-S2BV64K72R",
+            databaseURL: "https://frontend-mentor-cceee-default-rtdb.firebaseio.com"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const analytics = getAnalytics(app);
+        const db = getFirestore(app); 
+        const auth = getAuth();
+
+        const form = document.getElementById('signupForm');
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('psw').value;
+            const repeatPassword = document.getElementById('psw-repeat').value;
+            const name = document.getElementById('name').value;
+
+            const messageElement = document.getElementById('message');
+
+            if (password !== repeatPassword) {
+                messageElement.textContent = "Passwords do not match!";
+                return;
+            }
+
+            try {
+                // Disable the submit button
+                const submitButton = form.querySelector('.signupbtn');
+                submitButton.disabled = true;
+
+                const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+                const user = userCredential.user;
+                await updateProfile(user, { displayName: name });
+                await addDoc(collection(db, "users"), {  
+                    uid: user.uid,  
+                    name: name,
+                    email: email,
+                });
+
+                messageElement.textContent = "Signed up successfully!";
+                // Redirect or display further options after signup
+
+            } catch (error) {
+                messageElement.textContent = 'Error: ' + error.message;
+            } finally {
+                // Re-enable the submit button after the process
+                submitButton.disabled = false;
+            }
+        });
+    </script>
+</body>
+</html>
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="signUp.css" />
